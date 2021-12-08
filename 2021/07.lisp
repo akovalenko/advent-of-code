@@ -25,6 +25,5 @@
 	sum (floor (+ (* delta delta) delta) 2)))
 
 (defun part-2 (&optional (data (parse-input)))
-  (loop with best-cost = nil
-	for x from (reduce 'min data) to (reduce 'max data)
+  (loop for x from (reduce 'min data) to (reduce 'max data)
 	minimize (adjusted-motion-cost x data)))
