@@ -87,8 +87,8 @@
 		 :stream output :case :downcase)
 	  (terpri output)
 	  (format output "
-;;; Advent of code ~4,'0d: day ~2,'0d ~2:*
-;;; see https://adventofcode.com/~4,'0d/day/~d
+;;; Advent of code ~4,'0d: day ~2,'0d
+;;; see https://adventofcode.com/~2:*~4,'0d/day/~d
 
 (defun parse-input ()
   (file-lines (my-input-path)))
@@ -100,4 +100,3 @@
 	  (write-line "" output))
       (file-error ()))
     pathname))
-
