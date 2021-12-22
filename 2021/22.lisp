@@ -109,3 +109,90 @@
 (defun part-2 (&optional (data (parse-input)))
   (model-whole-area data))
 
+(defun consort (cons)
+  (if (<= (car cons) (cdr cons))
+      cons (cons (cdr cons) (car cons))))
+
+(defun rev-kp-get (n hash-table)
+  (maphash (lambda (k v)
+	     (when (= v n)
+	       (return-from rev-kp-get k)))
+	   hash-table))
+
+(defun propose-partition (data axis)
+  (let* ((kp (key-points data axis))
+	 (nkps (hash-table-count kp))
+	 (starts
+	   (make-sequence 'simple-vector nkps :initial-element 0))
+	 (ends
+	   (make-sequence 'simple-vector nkps :initial-element 0)))
+    (loop for (onoff ranges) in data
+	  for (a . b) = (consort (elt ranges axis))
+	  do (incf (svref starts (gethash a kp)))
+	     (incf (svref ends (gethash (1+ b) kp))))
+    (loop with ended = 0
+	  for ending-here across ends
+	  for index from 0
+	  do (incf ended ending-here)
+	     (setf (svref ends index) ended))
+    (loop with started = 0
+	  for index downfrom (1- nkps) to 0
+	  for starting-here = (svref starts index)
+	  do (incf started starting-here)
+	     (setf (svref starts index) started))
+    (loop
+      with all = (svref starts 0)
+      with best-cost = (svref starts 0) and best-split = 0
+      for split below nkps
+      for lefts = (svref ends split)
+      for rights = (svref starts split)
+      for crossers = (- all lefts rights)
+      for cost = (+ crossers (max lefts rights))
+      when (< cost best-cost)
+	do (setf best-cost cost
+		 best-split split)
+      finally (return (values best-cost (rev-kp-get best-split kp))))))
+
+(defun propose-partition-axis (data)
+  (loop for axis below 3
+	for best-cost = (1- (length data))
+	for best-value = nil
+	for best-axis = nil
+	do (multiple-value-bind (cost value)
+	       (propose-partition data axis)
+	     (when (< cost best-cost)
+	       (setf best-cost cost
+		     best-value value
+		     best-axis axis)))
+	finally (return (values best-axis best-value best-cost))))
+
+(defun partition (data axis value)
+  (loop with left = nil and right = nil
+	for item in data
+	for (onoff ranges) = item
+	for (v0 . v1) = (consort (elt ranges axis))
+	do (cond
+	     ((< v1 value)
+	      (push item left))
+	     ((<= value v0)
+	      (push item right))
+	     (t ;; split
+	      (let ((spec-left (cons v0 (1- value)))
+		    (spec-right (cons value v1))
+		    (ranges-left (copy-list ranges))
+		    (ranges-right (copy-list ranges)))
+		(setf (elt ranges-left axis) spec-left
+		      (elt ranges-right axis) spec-right)
+		(push (list onoff ranges-left) left)
+		(push (list onoff ranges-right) right))))
+	finally (return (list (nreverse left)
+			      (nreverse right)))))
+
+(defun faster-mwa (data)
+  (multiple-value-bind (axis value) (propose-partition-axis data)
+    (if axis
+	(reduce '+ (partition data axis value) :key 'faster-mwa)
+	(model-whole-area data))))
+
+(defun part-2-faster-version (&optional (data (parse-input)))
+  (faster-mwa data))
