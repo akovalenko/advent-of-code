@@ -98,8 +98,6 @@
 	    (make-array (list h w) :initial-element nil))
 	  (tentative-distance
 	    (make-array (list h w) :initial-element nil))
-	  (heap-index
-	    (make-array (list h w) :initial-element nil))
 	  (target
 	    (complex (1- h) (1- w))))
       (flet ((betterp (c0 c1)
@@ -108,16 +106,14 @@
 		 (or (and d0 (not d1))
 		     (and d0 d1 (< d0 d1))))))
 	(let ((heap (make-heap :predicate #'betterp)))
-	  (setf (caref tentative-distance 0) 0
-		(caref heap-index 0) 0)
+	  (setf (caref tentative-distance 0) 0)
 	  (hpush heap 0)
 	  (loop
 	    (let* ((current (hpop heap)) ;; best unvisited
 		   (x0 (imagpart current))
 		   (y0 (realpart current))
 		   (cost (caref tentative-distance current)))
-	      (setf (caref visited current) t
-		    (caref heap-index current) nil)
+	      (setf (caref visited current) t)
 	      
 	      (when (= current target)
 		(return (caref tentative-distance current)))
@@ -134,12 +130,8 @@
 					 (< new-cost (caref tentative-distance this)))
 				 ;; improving cost
 				 (setf (caref tentative-distance this)
-				       new-cost
-				       (caref heap-index this)
-				       (if old-cost
-					   (hadjust heap (caref heap-index this))
-					   (hpush heap this)))))))))))))))
-
+				       new-cost)
+				 (hpush heap this)))))))))))))
 
 (defun part-1 (&optional (data (parse-input)))
   (minimal-cost-v4 data))
