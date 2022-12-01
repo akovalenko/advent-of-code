@@ -24,11 +24,8 @@
 
 
 (defun part-2 (&optional (data (parse-input)))
-  (let ((queue (make-hpqueue :predicate #'>)))
-    (loop for item in (mapcar
-		       (lambda (set)
-			 (reduce '+ set))
-		       data)
-	  do (hpqueue-push item item queue))
-    (loop for n below 3
-	  sum (hpqueue-pop queue))))
+  (reduce '+ (subseq (sort (mapcar
+			    (lambda (set)
+			      (reduce '+ set))
+			    data) #'>)
+		     0 3)))

@@ -4,8 +4,7 @@
   :license "Public domain"
   :depends-on ("alexandria"
                "split-sequence"
-	       "cl-ppcre"
-	       "hashed-priority-queue")
+	       "cl-ppcre")
   :serial t
   :components ((:file "package")
                ;; The basics: these files can use CL and Alexandria.
