@@ -1,10 +1,11 @@
-(defsystem "advent-of-code"
+(asdf:defsystem "advent-of-code"
   :description "Some solutions to adventofcode.com puzzles"
   :author "Anton Kovalenko <anton@sw4me.com>"
   :license "Public domain"
   :depends-on ("alexandria"
                "split-sequence"
-	       "cl-ppcre")
+	       "cl-ppcre"
+	       "hashed-priority-queue")
   :serial t
   :components ((:file "package")
                ;; The basics: these files can use CL and Alexandria.

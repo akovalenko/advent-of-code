@@ -2,7 +2,8 @@
   (:nicknames #:aoc)
   (:use #:common-lisp
 	#:split-sequence
-	#:alexandria)
+	#:alexandria
+	#:hashed-priority-queue)
   (:export #:data-path
 	   #:my-input-path
 	   #:with-test-data
