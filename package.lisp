@@ -25,7 +25,7 @@
 	  (package-name '#:advent-of-code)
 	  year day))
 
-(dolist (year '(2018 2019 2020 2021))
+(dolist (year '(2018 2019 2020 2021 2022))
   (dotimes (day 25)
     (let ((package-name (year-day-package-name year (1+ day))))
       (unless (find-package package-name)

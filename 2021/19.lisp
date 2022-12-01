@@ -202,7 +202,6 @@
 	    (assert (equalp (mcr-apply op2 (mcr-apply op start))
 			    (mcr-apply (mcr-compose op op2) start)))))))))
 
-
 (defun make-diff-hash (point-vector)
   (let ((hash-table (make-hash-table :test 'equalp))
 	(length (length point-vector)))
@@ -297,8 +296,6 @@
 			      (mcr-compose mcr
 					   (svref locations known))))))))
     (values scan-tables locations)))
-
-
 
 (defun part-1 (&optional (data (parse-input)))
   (multiple-value-bind (scan-tables locations)

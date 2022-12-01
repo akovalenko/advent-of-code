@@ -34,7 +34,6 @@
 (defun part-1 (&optional (data (parse-input)))
   (reduce '+ (mapcar 'corruption-score data)))
 
-
 (defun completion-score (string)
   (loop with stack = nil
 	for paren across string

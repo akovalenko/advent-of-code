@@ -3,13 +3,15 @@
 ;;; Advent of code 2021: day 18
 ;;; see https://adventofcode.com/2021/day/18
 
-
-(defstruct (ptr (:type vector))
+(defstruct ptr
   (setter #'identity)
   (getter #'values))
 
-(defun at (ptr) (funcall (ptr-getter ptr)))
-(defun (setf at) (v ptr) (funcall (ptr-setter ptr) v))
+(defun at (ptr)
+  (funcall (ptr-getter ptr)))
+
+(defun (setf at) (v ptr)
+  (funcall (ptr-setter ptr) v))
 
 (defmacro to (place)
   (let ((v (gensym "V")))
@@ -29,9 +31,9 @@
    (read-from-string
     (map 'string (lambda (char)
 		   (case char
-		     (#\, #\Space)
 		     (#\[ #\()
 		     (#\] #\))
+		     (#\, #\Space)
 		     (otherwise char)))
 	 line))))
 

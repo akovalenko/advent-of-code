@@ -33,6 +33,11 @@
 				(aref reg (regno a)) b)))))
 	finally (return (aref reg (regno :z)))))
 
+;;; The program turns out to be composed of 14 similar chunks, looking
+;;; like the template below. In the template, * stands for a varying
+;;; integer parameter, while a list (26 1) stands for one of its
+;;; members.
+
 (defparameter *chunk-template*
   '((:inp :w)
     (:mul :x 0)
@@ -54,6 +59,8 @@
     (:add :z :y)))
 
 (defun check-program (prog)
+  "Check if PROG is composed of pieces like *chunk-template*, and if so,
+collect chunk parameters into list of lists"
   (loop with pattern = nil
 	and parameters = nil
 	for item in prog
@@ -65,7 +72,6 @@
 	   (assert (eql a a1))
 	   (unless (eql b b1)
 	     (etypecase b1
-	       (null)
 	       (list
 		(assert (member b b1))
 		(push b parameters))
@@ -101,14 +107,19 @@
 
 (defun check-invariants (param)
   (loop for (div dx dy) in param
-	do (assert (typep (+ dy 9) '(mod 26)))
-	   (assert (typep (+ dy 1) '(mod 26)))
-	   (assert (not (<= 1 (mod (- dy) 26) 9)))
-	   (assert (or (= div 26) (< 9 dx))))
+	do (assert (typep (+ dy 9) '(mod 26))
+		   (dy) "Base-26 Dy=~a wrapping around when added to input" dy)
+	   (assert (typep (+ dy 1) '(mod 26))
+		   (dy) "Base-26 Dy=~a can underflow when added to input" dy)
+	   (assert (not (<= 1 (mod (- dy) 26) 9))
+		   (dy) "Zero sum of Dy=~a and an input is possible" dy)
+	   (assert (or (= div 26) (< 9 dx))
+		   (dx) "Pushing construction might be guessable"))
   (assert
    (= 7
       (count 26 param :key 'first)
-      (count 1 param :key 'first)))
+      (count 1 param :key 'first))
+   (param) "Exactly 7 pops and 7 pushes expected")
   param)
 
 ;;; every "pop" chunk, when it's known to have a successfull guess,
@@ -147,11 +158,17 @@
 	finally (assert (notany 'null inputs))
 		(return (format nil "~{~a~}" (coerce inputs 'list)))))
 
-(defun part-1 (&optional (input (parse-input)))
-  (maximum-inputs
-   (digit-relations
-    (check-invariants
-     (check-program input)))))
+(defun check-input-string (input-string prog)
+  (assert (= 0 (run prog (map 'list 'digit-char-p input-string))))
+  input-string)
+
+(defun part-1 (&optional (prog (parse-input)))
+  (check-input-string
+   (maximum-inputs
+    (digit-relations
+     (check-invariants
+      (check-program prog))))
+   prog))
 
 ;;; 7 pushes and 7 pops give us 7 unique inter-digit relations, where
 ;;; two digits are paired and their difference is established, so it's
@@ -170,8 +187,10 @@
 	finally (assert (notany 'null inputs))
 		(return (format nil "~{~a~}" (coerce inputs 'list)))))
 
-(defun part-2 (&optional (input (parse-input)))
-  (minimum-inputs
-   (digit-relations
-    (check-invariants
-     (check-program input)))))
+(defun part-2 (&optional (prog (parse-input)))
+  (check-input-string
+   (minimum-inputs
+    (digit-relations
+     (check-invariants
+      (check-program prog))))
+   prog))

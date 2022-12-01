@@ -103,4 +103,5 @@
 			      when (and (<= x0 (realpart point) x1)
 					(<= y0 (imagpart point) y1))
 				do (setf (gethash (complex xv yv) table) t)))
-	    finally (return (hash-table-count table))))))
+	    finally (return (values (hash-table-count table) table))))))
+

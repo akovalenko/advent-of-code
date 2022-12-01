@@ -11,7 +11,7 @@
     (make-array (list (length list) (length (first list)))
 		:initial-contents list)))
 
-(defstruct (heap (:type vector))
+(defstruct heap
   (data (make-sequence 'simple-vector 10 :initial-element nil)
    :type simple-vector)
   (predicate #'<
@@ -25,6 +25,7 @@
   (let ((vector (heap-data heap))
 	(betterp (heap-predicate heap))
 	(key-fn (heap-key heap)))
+    (declare (array-index index))
     (loop
       (when (zerop index)
 	(return index))
@@ -39,6 +40,7 @@
 	(setf index parent)))))
 
 (defun sift-down (heap index)
+  (declare (array-index index))
   (let ((vector (heap-data heap))
 	(betterp (heap-predicate heap))
 	(key-fn (heap-key heap))
@@ -56,8 +58,8 @@
 				 (funcall key-fn (svref vector right))))
 		    left right)))
 	  (when (funcall betterp
-			   (funcall key-fn (svref vector index))
-			   (funcall key-fn (svref vector rootest-child)))
+			 (funcall key-fn (svref vector index))
+			 (funcall key-fn (svref vector rootest-child)))
 	    (return index))
 	  
 	  (rotatef (svref vector index)

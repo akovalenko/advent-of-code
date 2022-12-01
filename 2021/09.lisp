@@ -63,8 +63,7 @@
 		     (incf (gethash code count 0))
 		     (setf (aref visited y x) t)
 		     (loop while front
-			   do (print front)
-			      (setf front
+			   do (setf front
 				    (loop for (y0 x0) in front
 					  nconc
 					  (loop for (dy dx) in deltas

@@ -10,5 +10,8 @@
                ;; The basics: these files can use CL and Alexandria.
                (:file "utils")
 
-	       . #.(cl:loop for day from 1 to 25
-		      collect `(:file ,(cl:format nil "2020/~2,'0d" day)))))
+	       . #. (cl:loop
+		       for year from 2020 to 2021
+		       nconc (cl:loop for day from 1 to 25
+				collect
+				`(:file ,(cl:format nil "~d/~2,'0d" year day))))))
