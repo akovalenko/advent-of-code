@@ -27,6 +27,7 @@
 		  (next)
 		  (next)
 		  (incf x arg))))
+      (next)
       sum)))
 
 (defun part-2 (&optional (data (parse-input)))
@@ -47,8 +48,9 @@
 		  (next)
 		  (next)
 		  (incf x arg))))
+      (next)
       (loop for sy below 6
 	    do (loop for sx below 40
-		     do (write-char (if (aref screen sy sx) #\# #\.)))
+		     do (write-string (if (aref screen sy sx) "██" "..")))
 	       (write-line "")))))
 
